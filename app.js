@@ -10,4 +10,3 @@ app.use(express.json());
 // Register routes
 app.use('/api/orders', orderRoutes);
 
-// ...existing code...
