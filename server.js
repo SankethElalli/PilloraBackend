@@ -24,6 +24,7 @@ connectDB();
 // Helper: Allow localhost and LAN IPs for dev
 const allowedOrigins = [
   'http://localhost:3000',
+  'https://pillorapharmacy.vercel.app',
 ];
 if (process.env.HOST_IP) {
   allowedOrigins.push(`http://${process.env.HOST_IP}:3000`);
