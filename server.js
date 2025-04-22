@@ -18,13 +18,12 @@ if (!fs.existsSync(uploadDir)){
 
 const app = express();
 
-// Connect to MongoDB
 connectDB();
 
-// Helper: Allow localhost and LAN IPs for dev
+// Hosts
 const allowedOrigins = [
   'http://localhost:3000',
-  'https://pillora-frontend.vercel.app',
+  'https://pillora.vercel.app',
 ];
 if (process.env.HOST_IP) {
   allowedOrigins.push(`http://${process.env.HOST_IP}:3000`);
@@ -69,7 +68,6 @@ app.use((req, res, next) => {
   next();
 });
 
-// Debug middleware to log requests
 app.use((req, res, next) => {
   console.log(`${req.method} ${req.url}`, {
     body: req.body,
