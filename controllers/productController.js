@@ -62,3 +62,26 @@ exports.getProduct = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+// Add this function for PATCH /api/products/:id
+exports.updateProduct = async (req, res) => {
+  try {
+    const productId = req.params.id;
+    // Only allow vendors to update their own products
+    const product = await Product.findOne({ _id: productId, vendorId: req.user.userId });
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+    // Update allowed fields
+    const allowedFields = ['name', 'description', 'price', 'stock', 'category', 'image'];
+    allowedFields.forEach(field => {
+      if (req.body[field] !== undefined) {
+        product[field] = req.body[field];
+      }
+    });
+    await product.save();
+    res.json(product);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};

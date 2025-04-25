@@ -17,4 +17,7 @@ router.get('/', (req, res, next) => {
 router.post('/', auth, productController.addProduct);
 router.get('/:id', productController.getProduct);
 
+// Add this PATCH route for updating a product by ID
+router.patch('/:id', auth, productController.updateProduct);
+
 module.exports = router;
