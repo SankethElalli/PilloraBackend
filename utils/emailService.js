@@ -44,8 +44,7 @@ async function sendInvoiceEmail(to, order, invoicePath) {
         <div style="font-family:'Segoe UI',Arial,sans-serif;background:#f8fafc;padding:32px;">
           <div style="max-width:600px;margin:auto;background:#fff;border-radius:12px;box-shadow:0 2px 12px #e2e8f0;padding:32px;">
             <div style="text-align:center;margin-bottom:24px;">
-              <img src="https://pillora.in/logo.png" alt="Pillora" style="height:48px;margin-bottom:8px;" onerror="this.style.display='none'"/>
-              <h2 style="margin:0;color:#2563eb;font-weight:700;">Thank you for your order!</h2>
+              <h2 style="margin:0;color:#497d74;font-weight:700;">Thank you for your order!</h2>
               <p style="color:#64748b;font-size:1.1rem;margin:8px 0 0 0;">Your order has been placed successfully.</p>
             </div>
             <hr style="border:none;border-top:1px solid #e2e8f0;margin:24px 0;">
@@ -77,7 +76,7 @@ async function sendInvoiceEmail(to, order, invoicePath) {
             <div style="text-align:right;margin-bottom:24px;">
               <span style="font-size:1.15rem;color:#0f172a;font-weight:700;">Total: ₹${order.totalAmount.toFixed(2)}</span>
             </div>
-            <div style="background:#f1f5f9;padding:16px 18px;border-radius:8px;color:#334155;font-size:1rem;">
+            <div style="background:#f1f5f9;padding:16px 18px;border-radius:8px;color:#497d74;font-size:1rem;">
               <strong>Need help?</strong> Contact us at <a href="mailto:support@pillora.in" style="color:#2563eb;text-decoration:none;">support@pillora.in</a>
             </div>
             <p style="color:#64748b;font-size:0.98rem;margin-top:32px;text-align:center;">
