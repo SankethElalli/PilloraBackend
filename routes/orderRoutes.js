@@ -3,7 +3,8 @@ const router = express.Router();
 const Order = require('../models/Order');
 const auth = require('../middleware/auth');
 const PDFDocument = require('pdfkit');
-const fs = require('fs').promises;
+const fs = require('fs'); // For createWriteStream
+const fsPromises = require('fs').promises; // For async/await file ops
 const path = require('path');
 const { sendInvoiceEmail } = require('../utils/emailService');
 
@@ -115,8 +116,8 @@ router.post('/', auth, async (req, res) => {
 
     // Create temp directory if it doesn't exist
     const tempDir = path.join(__dirname, '../temp');
-    if (!await fs.access(tempDir).catch(() => false)) {
-      await fs.mkdir(tempDir, { recursive: true });
+    if (!await fsPromises.access(tempDir).then(() => true).catch(() => false)) {
+      await fsPromises.mkdir(tempDir, { recursive: true });
     }
 
     // Generate invoice
@@ -146,18 +147,14 @@ router.post('/', auth, async (req, res) => {
     doc.text(`Total Amount: ₹${order.totalAmount.toFixed(2)}`, { bold: true });
     doc.end();
 
-    // Wait for PDF to be created then send email
     writeStream.on('finish', async () => {
       try {
-        console.log('Sending email to:', order.customerEmail);
         await sendInvoiceEmail(order.customerEmail, order, invoicePath);
-        console.log('Email sent successfully');
       } catch (error) {
         console.error('Error sending invoice email:', error);
       } finally {
-        // Clean up the file
         try {
-          await fs.unlink(invoicePath);
+          await fsPromises.unlink(invoicePath);
         } catch (unlinkError) {
           console.error('Error deleting temp file:', unlinkError);
         }
