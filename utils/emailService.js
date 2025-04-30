@@ -41,10 +41,10 @@ async function sendInvoiceEmail(to, order, invoicePath) {
       to: to,
       subject: `Your Pillora Order Invoice - ${order.orderNumber}`,
       html: `
-        <div style="font-family:'Segoe UI',Arial,sans-serif;background:#f8fafc;padding:32px;">
-          <div style="max-width:600px;margin:auto;background:#fff;border-radius:12px;box-shadow:0 2px 12px #e2e8f0;padding:32px;">
+        <div style="font-family:'Segoe UI',Arial,sans-serif;background:#ffffff00;padding:32px;">
+          <div style="max-width:600px;margin:auto;background:#d4ffdc;border-radius:40px;box-shadow:0 2px 12px #e2e8f0;padding:32px;">
             <div style="text-align:center;margin-bottom:24px;">
-              <h2 style="margin:0;color:#497d74;font-weight:700;">Thank you for your order!</h2>
+              <h2 style="margin:0;color:#000;font-weight:700;">Thank you for your order!</h2>
               <p style="color:#64748b;font-size:1.1rem;margin:8px 0 0 0;">Your order has been placed successfully.</p>
             </div>
             <hr style="border:none;border-top:1px solid #e2e8f0;margin:24px 0;">
