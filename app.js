@@ -7,10 +7,14 @@ const path = require('path');
 
 const app = express();
 
-// Ensure temp directory exists
+// Ensure temp directory exists with error handling
 const tempDir = path.join(__dirname, 'temp');
-if (!fs.existsSync(tempDir)) {
-  fs.mkdirSync(tempDir);
+try {
+  if (!fs.existsSync(tempDir)) {
+    fs.mkdirSync(tempDir, { recursive: true });
+  }
+} catch (error) {
+  console.error('Error creating temp directory:', error);
 }
 
 app.use(cors());
