@@ -12,11 +12,10 @@ const transporter = nodemailer.createTransport({
 
 async function sendInvoiceEmail(to, order, invoicePath) {
   try {
-    console.log('Preparing to send email:', {
-      to,
-      orderNumber: order.orderNumber,
-      invoicePath
-    });
+    // Build product list HTML
+    const itemsHtml = order.items.map(item =>
+      `<li>${item.name} × ${item.quantity} @ ₹${item.price.toFixed(2)} each = <strong>₹${(item.price * item.quantity).toFixed(2)}</strong></li>`
+    ).join('');
 
     const info = await transporter.sendMail({
       from: `"Pillora Orders" <${process.env.SMTP_USER}>`,
@@ -24,14 +23,18 @@ async function sendInvoiceEmail(to, order, invoicePath) {
       subject: `Your Pillora Order Invoice - ${order.orderNumber}`,
       html: `
         <h1>Thank you for your order!</h1>
-        <p>Your order (${order.orderNumber}) has been successfully processed.</p>
+        <p>Your order (<strong>${order.orderNumber}</strong>) has been successfully processed.</p>
         <p>Please find your invoice attached.</p>
-        <p>Order Details:</p>
+        <p><strong>Order Details:</strong></p>
         <ul>
-          <li>Order Number: ${order.orderNumber}</li>
-          <li>Total Amount: ₹${order.totalAmount.toFixed(2)}</li>
-          <li>Payment Method: ${order.paymentMethod}</li>
+          <li><strong>Order Number:</strong> ${order.orderNumber}</li>
+          <li><strong>Payment Method:</strong> ${order.paymentMethod}</li>
         </ul>
+        <p><strong>Products Ordered:</strong></p>
+        <ul>
+          ${itemsHtml}
+        </ul>
+        <p><strong>Total Amount:</strong> ₹${order.totalAmount.toFixed(2)}</p>
       `,
       attachments: [
         {
