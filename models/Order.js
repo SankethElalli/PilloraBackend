@@ -14,7 +14,7 @@ const orderSchema = new mongoose.Schema({
   vendorId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Vendor',
-    required: false  // Make vendorId optional
+    required: false
   },
   customerEmail: {
     type: String,

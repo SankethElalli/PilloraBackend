@@ -44,7 +44,7 @@ const productSchema = new mongoose.Schema({
   vendor: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Vendor',
-    required: false  // Changed to false temporarily
+    required: false
   },
   vendorId: {
     type: mongoose.Schema.Types.ObjectId,

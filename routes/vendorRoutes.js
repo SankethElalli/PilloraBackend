@@ -10,7 +10,6 @@ router.post('/register', async (req, res) => {
   try {
     let { email, businessName, password, phone, address, licenseNumber, gstin } = req.body;
 
-    // Normalize email to lowercase before saving
     email = email.toLowerCase();
 
     const existingVendor = await Vendor.findOne({ 
@@ -31,7 +30,7 @@ router.post('/register', async (req, res) => {
 
     const vendor = new Vendor({
       businessName,
-      email, // already lowercased
+      email,
       password: hashedPassword,
       phone,
       address,
@@ -52,7 +51,6 @@ router.post('/login', async (req, res) => {
     let { email, password } = req.body;
     console.log('Vendor login attempt:', email);
 
-    // Normalize email to lowercase for consistent login
     email = email.toLowerCase();
 
     const vendor = await Vendor.findOne({ email });

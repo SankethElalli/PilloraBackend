@@ -35,7 +35,6 @@ router.post('/', auth, async (req, res) => {
   }
 });
 
-// Add this new route
 router.get('/', auth, async (req, res) => {
   try {
     const orders = await Order.find({ customerEmail: req.user.email })

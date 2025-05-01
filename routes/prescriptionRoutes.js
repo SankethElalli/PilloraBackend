@@ -96,9 +96,7 @@ router.post('/upload', auth, multer({
   }
 }).single('prescription'), async (req, res) => {
   try {
-    // You must determine the vendorId for this prescription.
-    // For demo, assign a default vendor or use logic to select vendor.
-    // Example: assign to a default vendor (replace with your logic)
+
     const defaultVendorId = process.env.DEFAULT_VENDOR_ID;
     if (!defaultVendorId) {
       return res.status(400).json({ message: 'No vendor assigned for prescription. Set DEFAULT_VENDOR_ID in env.' });

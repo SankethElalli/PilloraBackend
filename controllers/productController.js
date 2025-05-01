@@ -20,7 +20,7 @@ exports.addProduct = async (req, res) => {
       stock: Number(stock),
       category,
       image,
-      vendorId: req.user.userId // <-- associate with vendor
+      vendorId: req.user.userId
     });
 
     await product.save();
@@ -38,7 +38,6 @@ exports.addProduct = async (req, res) => {
 exports.getProducts = async (req, res) => {
   try {
     let query = {};
-    // Only filter by vendor if the request is authenticated as a vendor
     if (req.user && req.user.type === 'vendor') {
       query.vendorId = req.user.userId;
     }

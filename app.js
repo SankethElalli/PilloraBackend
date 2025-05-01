@@ -7,7 +7,6 @@ const path = require('path');
 
 const app = express();
 
-// Ensure temp directory exists with error handling
 const tempDir = path.join(__dirname, 'temp');
 try {
   if (!fs.existsSync(tempDir)) {
@@ -19,6 +18,4 @@ try {
 
 app.use(cors());
 app.use(express.json());
-
-// Register routes
 app.use('/api/orders', orderRoutes);

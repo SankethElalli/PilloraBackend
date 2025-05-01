@@ -7,7 +7,7 @@ function generateInvoice(order, path) {
     
     doc.pipe(writeStream);
     
-    // Add company logo/header
+    // Add logo/header
     doc.fontSize(20).text('Pillora', { align: 'center' });
     doc.moveDown();
     

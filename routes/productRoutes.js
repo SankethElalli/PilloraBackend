@@ -9,15 +9,12 @@ router.get('/', (req, res, next) => {
   if (req.header('Authorization')) {
     return auth(req, res, () => productController.getProducts(req, res));
   }
-  // Otherwise, public fetch (all products)
   return productController.getProducts(req, res);
 });
 
 // Vendor: Add product (auth required)
 router.post('/', auth, productController.addProduct);
 router.get('/:id', productController.getProduct);
-
-// Add this PATCH route for updating a product by ID
 router.patch('/:id', auth, productController.updateProduct);
 
 module.exports = router;

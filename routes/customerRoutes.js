@@ -60,7 +60,6 @@ router.post('/login', async (req, res) => {
       { expiresIn: '24h' }
     );
 
-    // Create user object without password
     const userResponse = {
       _id: customer._id,
       name: customer.name,

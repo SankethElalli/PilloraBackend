@@ -9,7 +9,6 @@ const path = require('path');
 const prescriptionRoutes = require('./routes/prescriptionRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 
-// Create uploads directory if it doesn't exist
 const fs = require('fs');
 const uploadDir = path.join(__dirname, 'uploads/prescriptions');
 if (!fs.existsSync(uploadDir)){
@@ -37,7 +36,7 @@ for (let i = 0; i < 256; i++) {
 
 app.use(cors({
   origin: function(origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl)
+
     if (!origin) return callback(null, true);
     if (allowedOrigins.includes(origin)) {
       return callback(null, true);
