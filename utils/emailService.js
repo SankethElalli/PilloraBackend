@@ -43,8 +43,7 @@ async function sendInvoiceEmail(to, order, invoicePath) {
       html: `
         <div style="font-family:'Inter','Segoe UI',Arial,sans-serif;background:#f8fafc;padding:0;margin:0;">
           <div style="max-width:640px;margin:32px auto;background:#fff;border-radius:18px;box-shadow:0 4px 24px #0D7C6612;padding:0;overflow:hidden;">
-            <div style="background:linear-gradient(90deg,#0D7C66 60%,#2563eb 100%);padding:32px 32px 18px 32px;text-align:center;">
-              <img src="https://pillora.in/logo.png" alt="Pillora" style="height:48px;margin-bottom:10px;" onerror="this.style.display='none'"/>
+            <div style="background-color: #0D7C66;padding:32px 32px 18px 32px;text-align:center;">
               <h2 style="margin:0;color:#fff;font-weight:800;letter-spacing:1px;font-size:2rem;">Order Invoice</h2>
               <div style="color:#e0f2f1;font-size:1.1rem;margin-top:8px;">Thank you for shopping with Pillora!</div>
             </div>
@@ -105,10 +104,10 @@ async function sendInvoiceEmail(to, order, invoicePath) {
 function getInvoicePdfHtml(order) {
   const itemsHtml = order.items.map(item => `
     <tr>
-      <td style="padding:10px 8px;border-bottom:1px solid #f1f5f9;color:#334155;">${item.name}</td>
-      <td style="text-align:center;padding:10px 8px;border-bottom:1px solid #f1f5f9;color:#334155;">${item.quantity}</td>
-      <td style="text-align:right;padding:10px 8px;border-bottom:1px solid #f1f5f9;color:#334155;">₹${item.price.toFixed(2)}</td>
-      <td style="text-align:right;padding:10px 8px;border-bottom:1px solid #f1f5f9;color:#0D7C66;font-weight:600;">₹${(item.price * item.quantity).toFixed(2)}</td>
+      <td class="item-name">${item.name}</td>
+      <td class="item-qty">${item.quantity}</td>
+      <td class="item-price">₹${item.price.toFixed(2)}</td>
+      <td class="item-total">₹${(item.price * item.quantity).toFixed(2)}</td>
     </tr>
   `).join('');
 
@@ -118,11 +117,13 @@ function getInvoicePdfHtml(order) {
     <meta charset="utf-8" />
     <title>Pillora Invoice</title>
     <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
       body {
         font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
         background: #f8fafc;
         margin: 0;
         padding: 0;
+        color: #1e293b;
       }
       .invoice-container {
         max-width: 700px;
@@ -133,78 +134,105 @@ function getInvoicePdfHtml(order) {
         overflow: hidden;
       }
       .invoice-header {
-        background-color: #0D7C66;
+        background: linear-gradient(90deg, #0D7C66 60%, #2563eb 100%);
         padding: 32px 32px 18px 32px;
-        text-align: center;
+        text-align: left;
       }
       .invoice-header img {
         height: 48px;
         margin-bottom: 10px;
+        display: block;
       }
-      .invoice-header h2 {
-        margin: 0;
+      .invoice-header h1 {
+        margin: 0 0 4px 0;
         color: #fff;
         font-weight: 800;
+        font-size: 2.2rem;
         letter-spacing: 1px;
-        font-size: 2rem;
       }
       .invoice-header .subtitle {
         color: #e0f2f1;
         font-size: 1.1rem;
         margin-top: 8px;
+        font-weight: 500;
       }
       .invoice-body {
         padding: 32px;
       }
       .order-info {
-        margin-bottom: 24px;
+        margin-bottom: 28px;
       }
       .order-info-row {
         display: flex;
         justify-content: space-between;
-        align-items: center;
-        margin-bottom: 6px;
+        align-items: flex-start;
+        margin-bottom: 10px;
       }
       .order-info-label {
-        color: #64748b;
-        font-size: 1rem;
+        color: #497D74;
+        font-size: 1.08rem;
+        font-weight: 600;
+        min-width: 140px;
       }
       .order-info-value {
         color: #0D7C66;
         font-weight: 700;
-        font-size: 1.1rem;
+        font-size: 1.08rem;
+        text-align: right;
+        word-break: break-word;
+        max-width: 340px;
       }
       .order-info-value.secondary {
         color: #334155;
-        font-weight: 400;
-        font-size: 1rem;
+        font-weight: 500;
       }
       .products-title {
         color: #0D7C66;
-        font-size: 1.08rem;
-        margin: 0 0 10px 0;
+        font-size: 1.12rem;
+        margin: 0 0 12px 0;
         font-weight: 700;
+        letter-spacing: 0.2px;
       }
       .products-table {
         width: 100%;
         border-collapse: collapse;
-        margin: 16px 0;
+        margin: 16px 0 0 0;
+        font-size: 1rem;
       }
       .products-table th {
         background: #EAFAEA;
         text-align: left;
-        padding: 10px 8px;
+        padding: 12px 8px;
         border-bottom: 2px solid #0D7C66;
         color: #0D7C66;
         font-size: 1rem;
+        font-weight: 700;
+      }
+      .products-table th.item-qty,
+      .products-table td.item-qty {
+        text-align: center;
+        width: 60px;
+      }
+      .products-table th.item-price,
+      .products-table th.item-total,
+      .products-table td.item-price,
+      .products-table td.item-total {
+        text-align: right;
+        width: 110px;
       }
       .products-table td {
-        padding: 10px 8px;
+        padding: 12px 8px;
         border-bottom: 1px solid #f1f5f9;
         font-size: 1rem;
+        color: #334155;
+        vertical-align: top;
       }
-      .products-table td:last-child {
+      .products-table td.item-total {
         color: #0D7C66;
+        font-weight: 700;
+      }
+      .products-table td.item-price {
+        color: #497D74;
         font-weight: 600;
       }
       .total-row {
@@ -213,9 +241,16 @@ function getInvoicePdfHtml(order) {
         margin-bottom: 24px;
       }
       .total-label {
-        font-size: 1.2rem;
+        font-size: 1.15rem;
         color: #0D7C66;
         font-weight: 800;
+        margin-right: 18px;
+      }
+      .total-amount {
+        font-size: 1.35rem;
+        color: #2563eb;
+        font-weight: 800;
+        letter-spacing: 0.5px;
       }
       .help-box {
         background: #EAFAEA;
@@ -224,6 +259,7 @@ function getInvoicePdfHtml(order) {
         color: #0D7C66;
         font-size: 1rem;
         margin-bottom: 18px;
+        margin-top: 24px;
       }
       .footer {
         color: #64748b;
@@ -240,9 +276,8 @@ function getInvoicePdfHtml(order) {
   <body>
     <div class="invoice-container">
       <div class="invoice-header">
-        <img src="https://pillora.in/logo.png" alt="Pillora" onerror="this.style.display='none'"/>
-        <h2>Order Invoice</h2>
-        <div class="subtitle">Thank you for shopping with Pillora!</div>
+        <h1>Pillora</h1>
+        <div class="subtitle">Order Invoice</div>
       </div>
       <div class="invoice-body">
         <div class="order-info">
@@ -255,12 +290,20 @@ function getInvoicePdfHtml(order) {
             <span class="order-info-value secondary">${new Date(order.createdAt || Date.now()).toLocaleDateString()}</span>
           </div>
           <div class="order-info-row">
-            <span class="order-info-label">Payment Method:</span>
-            <span class="order-info-value secondary" style="text-transform:capitalize;">${order.paymentMethod}</span>
+            <span class="order-info-label">Customer Name:</span>
+            <span class="order-info-value secondary">${order.customerName}</span>
+          </div>
+          <div class="order-info-row">
+            <span class="order-info-label">Email:</span>
+            <span class="order-info-value secondary">${order.customerEmail}</span>
           </div>
           <div class="order-info-row">
             <span class="order-info-label">Shipping Address:</span>
-            <span class="order-info-value secondary" style="text-align:right;max-width:340px;display:inline-block;">${order.shippingAddress}</span>
+            <span class="order-info-value secondary">${order.shippingAddress}</span>
+          </div>
+          <div class="order-info-row">
+            <span class="order-info-label">Payment Method:</span>
+            <span class="order-info-value secondary" style="text-transform:capitalize;">${order.paymentMethod}</span>
           </div>
         </div>
         <div>
@@ -269,9 +312,9 @@ function getInvoicePdfHtml(order) {
             <thead>
               <tr>
                 <th>Product</th>
-                <th style="text-align:center;">Qty</th>
-                <th style="text-align:right;">Unit Price</th>
-                <th style="text-align:right;">Total</th>
+                <th class="item-qty">Qty</th>
+                <th class="item-price">Unit Price</th>
+                <th class="item-total">Total</th>
               </tr>
             </thead>
             <tbody>
@@ -280,7 +323,8 @@ function getInvoicePdfHtml(order) {
           </table>
         </div>
         <div class="total-row">
-          <span class="total-label">Total: ₹${order.totalAmount.toFixed(2)}</span>
+          <span class="total-label">Total:</span>
+          <span class="total-amount">₹${order.totalAmount.toFixed(2)}</span>
         </div>
         <div class="help-box">
           <strong>Need help?</strong> Contact us at <a href="mailto:support@pillora.in" style="color:#2563eb;text-decoration:none;">support@pillora.in</a>
