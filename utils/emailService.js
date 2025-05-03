@@ -16,20 +16,20 @@ async function sendInvoiceEmail(to, order, invoicePath) {
     const itemsHtml = `
       <table style="width:100%;border-collapse:collapse;margin:16px 0;">
         <thead>
-          <tr>
-            <th style="text-align:left;padding:8px 6px;border-bottom:1px solid #e2e8f0;">Product</th>
-            <th style="text-align:center;padding:8px 6px;border-bottom:1px solid #e2e8f0;">Qty</th>
-            <th style="text-align:right;padding:8px 6px;border-bottom:1px solid #e2e8f0;">Unit Price</th>
-            <th style="text-align:right;padding:8px 6px;border-bottom:1px solid #e2e8f0;">Total</th>
+          <tr style="background:#EAFAEA;">
+            <th style="text-align:left;padding:10px 8px;border-bottom:2px solid #0D7C66;color:#0D7C66;font-size:1rem;">Product</th>
+            <th style="text-align:center;padding:10px 8px;border-bottom:2px solid #0D7C66;color:#0D7C66;font-size:1rem;">Qty</th>
+            <th style="text-align:right;padding:10px 8px;border-bottom:2px solid #0D7C66;color:#0D7C66;font-size:1rem;">Unit Price</th>
+            <th style="text-align:right;padding:10px 8px;border-bottom:2px solid #0D7C66;color:#0D7C66;font-size:1rem;">Total</th>
           </tr>
         </thead>
         <tbody>
           ${order.items.map(item => `
             <tr>
-              <td style="padding:8px 6px;border-bottom:1px solid #f1f5f9;">${item.name}</td>
-              <td style="text-align:center;padding:8px 6px;border-bottom:1px solid #f1f5f9;">${item.quantity}</td>
-              <td style="text-align:right;padding:8px 6px;border-bottom:1px solid #f1f5f9;">₹${item.price.toFixed(2)}</td>
-              <td style="text-align:right;padding:8px 6px;border-bottom:1px solid #f1f5f9;"><strong>₹${(item.price * item.quantity).toFixed(2)}</strong></td>
+              <td style="padding:10px 8px;border-bottom:1px solid #f1f5f9;color:#334155;">${item.name}</td>
+              <td style="text-align:center;padding:10px 8px;border-bottom:1px solid #f1f5f9;color:#334155;">${item.quantity}</td>
+              <td style="text-align:right;padding:10px 8px;border-bottom:1px solid #f1f5f9;color:#334155;">₹${item.price.toFixed(2)}</td>
+              <td style="text-align:right;padding:10px 8px;border-bottom:1px solid #f1f5f9;color:#0D7C66;font-weight:600;">₹${(item.price * item.quantity).toFixed(2)}</td>
             </tr>
           `).join('')}
         </tbody>
@@ -41,48 +41,47 @@ async function sendInvoiceEmail(to, order, invoicePath) {
       to: to,
       subject: `Your Pillora Order Invoice - ${order.orderNumber}`,
       html: `
-        <div style="font-family:'Segoe UI',Arial,sans-serif;background:#ffffff00;padding:32px;">
-          <div style="max-width:600px;margin:auto;background:#d4ffdc;border-radius:40px;box-shadow:0 2px 12px #e2e8f0;padding:32px;">
-            <div style="text-align:center;margin-bottom:24px;">
-              <h2 style="margin:0;color:#000;font-weight:700;">Thank you for your order!</h2>
-              <p style="color:#64748b;font-size:1.1rem;margin:8px 0 0 0;">Your order has been placed successfully.</p>
+        <div style="font-family:'Inter','Segoe UI',Arial,sans-serif;background:#f8fafc;padding:0;margin:0;">
+          <div style="max-width:640px;margin:32px auto;background:#fff;border-radius:18px;box-shadow:0 4px 24px #0D7C6612;padding:0;overflow:hidden;">
+            <div style="background:linear-gradient(90deg,#0D7C66 60%,#2563eb 100%);padding:32px 32px 18px 32px;text-align:center;">
+              <img src="https://pillora.in/logo.png" alt="Pillora" style="height:48px;margin-bottom:10px;" onerror="this.style.display='none'"/>
+              <h2 style="margin:0;color:#fff;font-weight:800;letter-spacing:1px;font-size:2rem;">Order Invoice</h2>
+              <div style="color:#e0f2f1;font-size:1.1rem;margin-top:8px;">Thank you for shopping with Pillora!</div>
             </div>
-            <hr style="border:none;border-top:1px solid #e2e8f0;margin:24px 0;">
-            <div style="margin-bottom:18px;">
-              <h3 style="color:#0f172a;font-size:1.15rem;margin:0 0 8px 0;">Order Summary</h3>
-              <table style="width:100%;font-size:1rem;">
-                <tr>
-                  <td style="color:#64748b;">Order Number:</td>
-                  <td style="color:#0f172a;font-weight:600;">${order.orderNumber}</td>
-                </tr>
-                <tr>
-                  <td style="color:#64748b;">Order Date:</td>
-                  <td style="color:#0f172a;">${new Date(order.createdAt || Date.now()).toLocaleDateString()}</td>
-                </tr>
-                <tr>
-                  <td style="color:#64748b;">Payment Method:</td>
-                  <td style="color:#0f172a;text-transform:capitalize;">${order.paymentMethod}</td>
-                </tr>
-                <tr>
-                  <td style="color:#64748b;">Shipping Address:</td>
-                  <td style="color:#0f172a;">${order.shippingAddress}</td>
-                </tr>
-              </table>
+            <div style="padding:32px;">
+              <div style="margin-bottom:24px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;">
+                  <span style="color:#64748b;font-size:1rem;">Order Number:</span>
+                  <span style="color:#0D7C66;font-weight:700;font-size:1.1rem;">${order.orderNumber}</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;align-items:center;">
+                  <span style="color:#64748b;font-size:1rem;">Order Date:</span>
+                  <span style="color:#334155;">${new Date(order.createdAt || Date.now()).toLocaleDateString()}</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;align-items:center;">
+                  <span style="color:#64748b;font-size:1rem;">Payment Method:</span>
+                  <span style="color:#334155;text-transform:capitalize;">${order.paymentMethod}</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;align-items:center;">
+                  <span style="color:#64748b;font-size:1rem;">Shipping Address:</span>
+                  <span style="color:#334155;text-align:right;max-width:340px;display:inline-block;">${order.shippingAddress}</span>
+                </div>
+              </div>
+              <div style="margin-bottom:18px;">
+                <h3 style="color:#0D7C66;font-size:1.08rem;margin:0 0 10px 0;font-weight:700;">Products Ordered</h3>
+                ${itemsHtml}
+              </div>
+              <div style="text-align:right;margin-bottom:24px;">
+                <span style="font-size:1.2rem;color:#0D7C66;font-weight:800;">Total: ₹${order.totalAmount.toFixed(2)}</span>
+              </div>
+              <div style="background:#EAFAEA;padding:18px 20px;border-radius:10px;color:#0D7C66;font-size:1rem;margin-bottom:18px;">
+                <strong>Need help?</strong> Contact us at <a href="mailto:support@pillora.in" style="color:#2563eb;text-decoration:none;">support@pillora.in</a>
+              </div>
+              <p style="color:#64748b;font-size:0.98rem;margin-top:32px;text-align:center;">
+                You will receive your invoice as an attachment.<br>
+                Thank you for choosing <span style="color:#0D7C66;font-weight:700;">Pillora</span>!
+              </p>
             </div>
-            <div style="margin-bottom:18px;">
-              <h3 style="color:#0f172a;font-size:1.08rem;margin:0 0 8px 0;">Products Ordered</h3>
-              ${itemsHtml}
-            </div>
-            <div style="text-align:right;margin-bottom:24px;">
-              <span style="font-size:1.15rem;color:#0f172a;font-weight:700;">Total: ₹${order.totalAmount.toFixed(2)}</span>
-            </div>
-            <div style="background:#f1f5f9;padding:16px 18px;border-radius:8px;color:#497d74;font-size:1rem;">
-              <strong>Need help?</strong> Contact us at <a href="mailto:support@pillora.in" style="color:#2563eb;text-decoration:none;">support@pillora.in</a>
-            </div>
-            <p style="color:#64748b;font-size:0.98rem;margin-top:32px;text-align:center;">
-              You will receive your invoice as an attachment.<br>
-              Thank you for choosing Pillora!
-            </p>
           </div>
         </div>
       `,
