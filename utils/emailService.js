@@ -43,8 +43,8 @@ async function sendInvoiceEmail(to, order, invoicePath) {
       html: `
         <div style="font-family:'Inter','Segoe UI',Arial,sans-serif;background:#f8fafc;padding:0;margin:0;">
           <div style="max-width:640px;margin:32px auto;background:#fff;border-radius:18px;box-shadow:0 4px 24px #0D7C6612;padding:0;overflow:hidden;">
-            <div style="background:linear-gradient(90deg,#0D7C66 60%,#2563eb 100%);padding:32px 32px 18px 32px;text-align:center;">
-              <img src="https://pillora.in/logo.png" alt="Pillora" style="height:48px;margin-bottom:10px;" onerror="this.style.display='none'"/>
+            <div style="background-color: #0D7C66;padding:32px 32px 18px 32px;text-align:center;">
+              style="height:48px;margin-bottom:10px;" onerror="this.style.display='none'"/>
               <h2 style="margin:0;color:#fff;font-weight:800;letter-spacing:1px;font-size:2rem;">Order Invoice</h2>
               <div style="color:#e0f2f1;font-size:1.1rem;margin-top:8px;">Thank you for shopping with Pillora!</div>
             </div>
