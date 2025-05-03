@@ -133,7 +133,7 @@ function getInvoicePdfHtml(order) {
         overflow: hidden;
       }
       .invoice-header {
-        background: linear-gradient(90deg, #0D7C66 60%, #2563eb 100%);
+        background-color: #0D7C66;
         padding: 32px 32px 18px 32px;
         text-align: center;
       }
