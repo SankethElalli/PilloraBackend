@@ -74,7 +74,7 @@ async function sendInvoiceEmail(to, order, invoicePath) {
                 <span style="font-size:1.2rem;color:#0D7C66;font-weight:800;">Total: ₹${order.totalAmount.toFixed(2)}</span>
               </div>
               <div style="background:#EAFAEA;padding:18px 20px;border-radius:10px;color:#0D7C66;font-size:1rem;margin-bottom:18px;">
-                <strong>Need help?</strong> Contact us at <a href="mailto:support@pillora.in" style="color:#2563eb;text-decoration:none;">support@pillora.in</a>
+                <strong>Need help?</strong> Contact us at <a href="mailto:pillorasite@gmail.com" style="color:#2563eb;text-decoration:none;">support@pillora.in</a>
               </div>
               <p style="color:#64748b;font-size:0.98rem;margin-top:32px;text-align:center;">
                 You will receive your invoice as an attachment.<br>
