@@ -296,4 +296,26 @@ router.patch('/:orderId/status', auth, async (req, res) => {
   }
 });
 
+// PATCH endpoint to update payment status (optional, for extensibility)
+router.patch('/:orderId/payment-status', auth, async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const { paymentStatus } = req.body;
+
+    const order = await Order.findById(orderId);
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+
+    // Optionally, add vendor/customer/admin checks here
+
+    order.paymentStatus = paymentStatus;
+    await order.save();
+
+    res.json(order);
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating payment status' });
+  }
+});
+
 module.exports = router;
