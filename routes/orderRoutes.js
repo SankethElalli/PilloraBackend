@@ -115,8 +115,10 @@ router.get('/', auth, async (req, res) => {
     let query = {};
     if (req.user && req.user.type === 'vendor') {
       // Find all product IDs for this vendor
+      const Product = require('../models/Product');
       const vendorProducts = await Product.find({ vendorId: req.user.userId }, '_id');
-      const vendorProductIds = vendorProducts.map(p => p._id.toString());
+      const vendorProductIds = vendorProducts.map(p => p._id);
+
       // Only show orders containing at least one product from this vendor
       query['items.productId'] = { $in: vendorProductIds };
     } else if (req.user && req.user.type === 'customer') {
