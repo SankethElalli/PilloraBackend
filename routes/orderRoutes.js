@@ -3,8 +3,8 @@ const router = express.Router();
 const Order = require('../models/Order');
 const auth = require('../middleware/auth');
 const PDFDocument = require('pdfkit');
-const fs = require('fs');
-const fsPromises = require('fs').promises;
+const fs = require('fs'); // For createWriteStream
+const fsPromises = require('fs').promises; // For async/await file ops
 const path = require('path');
 const { sendInvoiceEmail } = require('../utils/emailService');
 
@@ -89,10 +89,10 @@ router.get('/:orderNumber/invoice', auth, async (req, res) => {
 
     doc.end();
 
-
+    // When the stream is finished, send the file
     stream.on('finish', () => {
       res.download(invoicePath, `invoice-${order.orderNumber}.pdf`, (err) => {
-
+        // Delete the file after sending
         fs.unlink(invoicePath, (unlinkErr) => {
           if (unlinkErr) console.error('Error deleting temp file:', unlinkErr);
         });
@@ -117,7 +117,7 @@ router.get('/', auth, async (req, res) => {
       // Find all product IDs for this vendor
       const vendorProducts = await Product.find({ vendorId: req.user.userId }, '_id');
       const vendorProductIds = vendorProducts.map(p => p._id.toString());
-
+      // Only show orders containing at least one product from this vendor
       query['items.productId'] = { $in: vendorProductIds };
     } else if (req.user && req.user.type === 'customer') {
       query.customerEmail = req.user.email;
@@ -127,6 +127,7 @@ router.get('/', auth, async (req, res) => {
       .populate('customerId', 'name email')
       .sort({ createdAt: -1 });
 
+    // Attach customer info for frontend
     const ordersWithCustomerInfo = orders.map(order => {
       const customerInfo = order.customerId;
       return {
@@ -145,8 +146,21 @@ router.get('/', auth, async (req, res) => {
 // Update the order creation response
 router.post('/', auth, async (req, res) => {
   try {
-    const order = await Order.create(req.body);
+    // Set paymentStatus based on paymentMethod or PayPal result
+    let paymentStatus = 'pending';
+    if (req.body.paymentMethod === 'paypal' && (req.body.paymentStatus === 'completed' || req.body.paymentStatus === 'paid')) {
+      paymentStatus = 'paid';
+    } else if (req.body.paymentMethod === 'paypal' && req.body.paymentStatus) {
+      paymentStatus = req.body.paymentStatus; // fallback for other PayPal statuses
+    } else if (req.body.paymentMethod === 'cod') {
+      paymentStatus = 'pending';
+    }
+    // Merge paymentStatus into order data
+    const orderData = { ...req.body, paymentStatus };
 
+    const order = await Order.create(orderData);
+
+    // Create temp directory if it doesn't exist
     const tempDir = path.join(__dirname, '../temp');
     if (!await fsPromises.access(tempDir).then(() => true).catch(() => false)) {
       await fsPromises.mkdir(tempDir, { recursive: true });
@@ -243,6 +257,7 @@ router.patch('/:orderId/status', auth, async (req, res) => {
     const { orderId } = req.params;
     const { status } = req.body;
 
+    // Find the order and check if the vendor owns at least one product in the order
     const order = await Order.findById(orderId).populate('items.productId');
     if (!order) {
       return res.status(404).json({ message: 'Order not found' });
@@ -252,7 +267,7 @@ router.patch('/:orderId/status', auth, async (req, res) => {
       // Get all product IDs for this vendor
       const vendorProducts = await Product.find({ vendorId: req.user.userId }, '_id');
       const vendorProductIds = vendorProducts.map(p => p._id.toString());
-
+      // Check if any product in the order belongs to this vendor
       const orderProductIds = order.items.map(item => item.productId?._id?.toString());
       const hasVendorProduct = orderProductIds.some(pid => vendorProductIds.includes(pid));
       if (!hasVendorProduct) {
