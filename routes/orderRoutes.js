@@ -7,6 +7,7 @@ const fs = require('fs'); // For createWriteStream
 const fsPromises = require('fs').promises; // For async/await file ops
 const path = require('path');
 const { sendInvoiceEmail } = require('../utils/emailService');
+const Product = require('../models/Product'); // <-- Add this line
 
 // Add invoice download route
 router.get('/:orderNumber/invoice', auth, async (req, res) => {
