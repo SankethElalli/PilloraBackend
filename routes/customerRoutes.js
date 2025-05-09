@@ -39,14 +39,12 @@ router.post('/login', async (req, res) => {
     const { email, password } = req.body;
     console.log('Login attempt for:', email);
 
-    // Always lowercase the email for lookup
     const customer = await Customer.findOne({ email: email.toLowerCase() });
     
     if (!customer) {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
 
-    // Compare password
     const isValid = await bcrypt.compare(password, customer.password);
     
     if (!isValid) {
@@ -60,7 +58,6 @@ router.post('/login', async (req, res) => {
       { expiresIn: '24h' }
     );
 
-    // Create user object without password
     const userResponse = {
       _id: customer._id,
       name: customer.name,
