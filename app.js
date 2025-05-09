@@ -2,22 +2,20 @@ const express = require('express');
 const cors = require('cors');
 const orderRoutes = require('./routes/orderRoutes');
 const phonepeRoutes = require('./routes/phonepeRoutes');
-const reviewRoutes = require('./routes/reviewRoutes');
 const fs = require('fs');
 const path = require('path');
 
 const app = express();
 
-// Ensure temp directory exists
 const tempDir = path.join(__dirname, 'temp');
-if (!fs.existsSync(tempDir)) {
-  fs.mkdirSync(tempDir);
+try {
+  if (!fs.existsSync(tempDir)) {
+    fs.mkdirSync(tempDir, { recursive: true });
+  }
+} catch (error) {
+  console.error('Error creating temp directory:', error);
 }
 
 app.use(cors());
 app.use(express.json());
-
-// Register routes
 app.use('/api/orders', orderRoutes);
-app.use('/api/phonepe', phonepeRoutes);
-app.use('/api/reviews', reviewRoutes);
