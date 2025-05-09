@@ -55,11 +55,12 @@ router.post('/login', async (req, res) => {
 
     // Generate JWT token
     const token = jwt.sign(
-      { userId: customer._id, type: 'customer', email: customer.email },
+      { userId: customer._id, type: 'customer', email: customer.email, name: customer.name },
       process.env.JWT_SECRET || 'your-secret-key',
       { expiresIn: '24h' }
     );
 
+    // Create user object without password
     const userResponse = {
       _id: customer._id,
       name: customer.name,
