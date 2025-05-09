@@ -27,8 +27,8 @@ router.post('/:id/reviews', auth, async (req, res) => {
       rating: req.body.rating,
       comment: req.body.comment,
       createdAt: new Date(),
-      userId: req.user
-        ? { name: req.user.name || req.user.email || 'Anonymous' }
+      userId: req.user && req.user.name
+        ? { name: req.user.name }
         : { name: 'Anonymous' }
     };
     if (!product.reviews) product.reviews = [];
