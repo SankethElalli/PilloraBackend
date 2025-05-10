@@ -71,7 +71,8 @@ async function sendInvoiceEmail(to, order, invoicePath) {
                 ${itemsHtml}
               </div>
               <div style="text-align:right;margin-bottom:24px;">
-                <span style="font-size:1.2rem;color:#0D7C66;font-weight:800;">Total: ₹${order.totalAmount.toFixed(2)}</span>
+                <span style="font-size:1.1rem;color:#0D7C66;font-weight:700;display:block;">Total (incl. GST):</span>
+                <span style="font-size:1.2rem;color:#0D7C66;font-weight:800;">₹${order.totalAmount.toFixed(2)}</span>
               </div>
               <div style="background:#EAFAEA;padding:18px 20px;border-radius:10px;color:#0D7C66;font-size:1rem;margin-bottom:18px;">
                 <strong>Need help?</strong> Contact us at <a href="mailto:pillorasite@gmail.com" style="color:#2563eb;text-decoration:none;">pillorasite@gmail.com</a>
@@ -323,7 +324,7 @@ function getInvoicePdfHtml(order) {
           </table>
         </div>
         <div class="total-row">
-          <span class="total-label">Total:</span>
+          <span class="total-label">Total (incl. GST):</span>
           <span class="total-amount">₹${order.totalAmount.toFixed(2)}</span>
         </div>
         <div class="help-box">
