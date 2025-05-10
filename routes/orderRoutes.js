@@ -26,128 +26,69 @@ router.get('/:orderNumber/invoice', auth, async (req, res) => {
       fs.mkdirSync(tempDir, { recursive: true });
     }
 
-    const doc = new PDFDocument({
-      size: 'A4',
-      margin: 50,
-      info: {
-        Title: `Pillora Invoice - ${order.orderNumber}`,
-        Author: 'Pillora',
-      }
-    });
-
-    // Header with theme colors
-    doc.rect(0, 0, doc.page.width, 160).fill('#0D7C66');
-    
-    // Company name and logo
-    doc.font('Helvetica-Bold')
-       .fontSize(35)
-       .fillColor('#FFFFFF')
-       .text('PILLORA', 50, 60);
-    
-    doc.font('Helvetica')
-       .fontSize(14)
-       .fillColor('#E0F2F1')
-       .text('Invoice', 50, 100);
-
-    // Order details box
-    doc.rect(50, 180, doc.page.width - 100, 120)
-       .lineWidth(1)
-       .stroke('#E2E8F0');
-
-    // Order info in two columns
-    doc.font('Helvetica')
-       .fontSize(10)
-       .fillColor('#334155');
-
-    // Left column
-    doc.text('BILLED TO:', 70, 200)
-       .font('Helvetica-Bold')
-       .text(order.customerName, 70, 220)
-       .font('Helvetica')
-       .text(order.shippingAddress, 70, 240, { width: 200 });
-
-    // Right column
-    doc.text('Invoice Number:', 350, 200)
-       .font('Helvetica-Bold')
-       .text(order.orderNumber, 350, 220)
-       .font('Helvetica')
-       .text('Date:', 350, 240)
-       .text(new Date(order.createdAt).toLocaleDateString('en-IN'), 350, 260);
-
-    // Items table header
-    const tableTop = 340;
-    doc.font('Helvetica-Bold')
-       .fillColor('#0D7C66')
-       .fontSize(12);
-
-    // Table headers
-    [
-      { text: 'Item', x: 50, width: 250 },
-      { text: 'Qty', x: 300, width: 50, align: 'center' },
-      { text: 'Price', x: 350, width: 100, align: 'right' },
-      { text: 'Total', x: 450, width: 100, align: 'right' }
-    ].forEach(header => {
-      doc.text(header.text, header.x, tableTop, { width: header.width, align: header.align || 'left' });
-    });
-
-    // Underline headers
-    doc.moveTo(50, tableTop + 20)
-       .lineTo(550, tableTop + 20)
-       .lineWidth(1)
-       .stroke('#0D7C66');
-
-    // Table rows
-    let y = tableTop + 40;
-    doc.font('Helvetica')
-       .fontSize(11)
-       .fillColor('#334155');
-
-    order.items.forEach(item => {
-      doc.text(item.name, 50, y, { width: 250 })
-         .text(item.quantity.toString(), 300, y, { width: 50, align: 'center' })
-         .text(`₹${item.price.toFixed(2)}`, 350, y, { width: 100, align: 'right' })
-         .text(`₹${(item.price * item.quantity).toFixed(2)}`, 450, y, { width: 100, align: 'right' });
-      
-      y += 25;
-    });
-
-    // Totals section
-    const subtotal = order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    const gst = subtotal * 0.12; // 12% GST
-    const total = subtotal + gst;
-
-    y += 20;
-    doc.moveTo(350, y).lineTo(550, y).stroke('#E2E8F0');
-    y += 10;
-
-    // Subtotal, GST, and Total
-    doc.font('Helvetica')
-       .text('Subtotal:', 350, y, { width: 100, align: 'right' })
-       .text(`₹${subtotal.toFixed(2)}`, 450, y, { width: 100, align: 'right' });
-    
-    y += 25;
-    doc.text('GST (12%):', 350, y, { width: 100, align: 'right' })
-       .text(`₹${gst.toFixed(2)}`, 450, y, { width: 100, align: 'right' });
-    
-    y += 25;
-    doc.font('Helvetica-Bold')
-       .fontSize(13)
-       .fillColor('#0D7C66')
-       .text('Total:', 350, y, { width: 100, align: 'right' })
-       .text(`₹${total.toFixed(2)}`, 450, y, { width: 100, align: 'right' });
-
-    // Footer
-    doc.font('Helvetica')
-       .fontSize(10)
-       .fillColor('#64748B')
-       .text('Thank you for shopping with Pillora!', 50, doc.page.height - 100)
-       .text('For support, contact us at: support@pillora.in', 50, doc.page.height - 80);
-
-    doc.end();
+    const doc = new PDFDocument();
+    const invoicePath = path.join(tempDir, `invoice-${order.orderNumber}.pdf`);
 
     // Pipe the PDF to a file
     const stream = fs.createWriteStream(invoicePath);
     doc.pipe(stream);
+
+    // Add content to PDF
+    // Header
+    doc.rect(0, 0, doc.page.width, 70).fill('#2563eb');
+    doc
+      .fillColor('#fff')
+      .fontSize(28)
+      .font('Helvetica-Bold')
+      .text('Pillora', 40, 25, { align: 'left', continued: false });
+    doc.moveDown(2);
+
+    // White background for body
+    doc.rect(0, 70, doc.page.width, doc.page.height - 70).fill('#fff');
+    doc.fillColor('#0f172a');
+
+    // Order Info
+    doc.fontSize(16).font('Helvetica-Bold').text('Invoice', 40, 90);
+    doc.fontSize(11).font('Helvetica').moveDown(0.5);
+    doc.text(`Order Number: ${order.orderNumber}`, 40);
+    doc.text(`Order Date: ${new Date(order.createdAt).toLocaleDateString()}`, 40);
+    doc.text(`Customer Name: ${order.customerName}`, 40);
+    doc.text(`Email: ${order.customerEmail}`, 40);
+    doc.text(`Shipping Address: ${order.shippingAddress}`, 40);
+    doc.moveDown(1);
+
+    // Table Header
+    const tableTop = doc.y + 10;
+    doc.font('Helvetica-Bold').fontSize(12);
+    doc.text('Product', 40, tableTop);
+    doc.text('Qty', 250, tableTop, { width: 40, align: 'center' });
+    doc.text('Unit Price', 320, tableTop, { width: 80, align: 'right' });
+    doc.text('Total', 420, tableTop, { width: 80, align: 'right' });
+    doc.moveTo(40, tableTop + 16).lineTo(500, tableTop + 16).strokeColor('#e2e8f0').stroke();
+
+    // Table Rows
+    let y = tableTop + 22;
+    doc.font('Helvetica').fontSize(11);
+    order.items.forEach(item => {
+      doc.text(item.name, 40, y, { width: 200 });
+      doc.text(item.quantity.toString(), 250, y, { width: 40, align: 'center' });
+      doc.text(`₹${item.price.toFixed(2)}`, 320, y, { width: 80, align: 'right' });
+      doc.text(`₹${(item.price * item.quantity).toFixed(2)}`, 420, y, { width: 80, align: 'right' });
+      y += 20;
+    });
+
+    // Total
+    doc.moveTo(40, y + 4).lineTo(500, y + 4).strokeColor('#e2e8f0').stroke();
+    doc.font('Helvetica-Bold').fontSize(13);
+    doc.text('Total', 320, y + 10, { width: 80, align: 'right' });
+    doc.text(`₹${order.totalAmount.toFixed(2)}`, 420, y + 10, { width: 80, align: 'right' });
+
+    // Footer
+    doc.font('Helvetica').fontSize(10).fillColor('#64748b');
+    doc.text('Thank you for shopping with Pillora!', 40, y + 40, { align: 'left' });
+    doc.text('For support: support@pillora.in', 40, y + 55, { align: 'left' });
+
+    doc.end();
 
     // When the stream is finished, send the file
     stream.on('finish', () => {
@@ -230,128 +171,67 @@ router.post('/', auth, async (req, res) => {
 
     // Generate invoice
     const invoicePath = path.join(tempDir, `invoice-${order.orderNumber}.pdf`);
-    const doc = new PDFDocument({
-      size: 'A4',
-      margin: 50,
-      info: {
-        Title: `Pillora Invoice - ${order.orderNumber}`,
-        Author: 'Pillora',
-      }
-    });
-
-    // Header with theme colors
-    doc.rect(0, 0, doc.page.width, 160).fill('#0D7C66');
-    
-    // Company name and logo
-    doc.font('Helvetica-Bold')
-       .fontSize(35)
-       .fillColor('#FFFFFF')
-       .text('PILLORA', 50, 60);
-    
-    doc.font('Helvetica')
-       .fontSize(14)
-       .fillColor('#E0F2F1')
-       .text('Invoice', 50, 100);
-
-    // Order details box
-    doc.rect(50, 180, doc.page.width - 100, 120)
-       .lineWidth(1)
-       .stroke('#E2E8F0');
-
-    // Order info in two columns
-    doc.font('Helvetica')
-       .fontSize(10)
-       .fillColor('#334155');
-
-    // Left column
-    doc.text('BILLED TO:', 70, 200)
-       .font('Helvetica-Bold')
-       .text(order.customerName, 70, 220)
-       .font('Helvetica')
-       .text(order.shippingAddress, 70, 240, { width: 200 });
-
-    // Right column
-    doc.text('Invoice Number:', 350, 200)
-       .font('Helvetica-Bold')
-       .text(order.orderNumber, 350, 220)
-       .font('Helvetica')
-       .text('Date:', 350, 240)
-       .text(new Date().toLocaleDateString('en-IN'), 350, 260);
-
-    // Items table header
-    const tableTop = 340;
-    doc.font('Helvetica-Bold')
-       .fillColor('#0D7C66')
-       .fontSize(12);
-
-    // Table headers
-    [
-      { text: 'Item', x: 50, width: 250 },
-      { text: 'Qty', x: 300, width: 50, align: 'center' },
-      { text: 'Price', x: 350, width: 100, align: 'right' },
-      { text: 'Total', x: 450, width: 100, align: 'right' }
-    ].forEach(header => {
-      doc.text(header.text, header.x, tableTop, { width: header.width, align: header.align || 'left' });
-    });
-
-    // Underline headers
-    doc.moveTo(50, tableTop + 20)
-       .lineTo(550, tableTop + 20)
-       .lineWidth(1)
-       .stroke('#0D7C66');
-
-    // Table rows
-    let y = tableTop + 40;
-    doc.font('Helvetica')
-       .fontSize(11)
-       .fillColor('#334155');
-
-    order.items.forEach(item => {
-      doc.text(item.name, 50, y, { width: 250 })
-         .text(item.quantity.toString(), 300, y, { width: 50, align: 'center' })
-         .text(`₹${item.price.toFixed(2)}`, 350, y, { width: 100, align: 'right' })
-         .text(`₹${(item.price * item.quantity).toFixed(2)}`, 450, y, { width: 100, align: 'right' });
-      
-      y += 25;
-    });
-
-    // Totals section
-    const subtotal = order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    const gst = subtotal * 0.12; // 12% GST
-    const total = subtotal + gst;
-
-    y += 20;
-    doc.moveTo(350, y).lineTo(550, y).stroke('#E2E8F0');
-    y += 10;
-
-    // Subtotal, GST, and Total
-    doc.font('Helvetica')
-       .text('Subtotal:', 350, y, { width: 100, align: 'right' })
-       .text(`₹${subtotal.toFixed(2)}`, 450, y, { width: 100, align: 'right' });
-    
-    y += 25;
-    doc.text('GST (12%):', 350, y, { width: 100, align: 'right' })
-       .text(`₹${gst.toFixed(2)}`, 450, y, { width: 100, align: 'right' });
-    
-    y += 25;
-    doc.font('Helvetica-Bold')
-       .fontSize(13)
-       .fillColor('#0D7C66')
-       .text('Total:', 350, y, { width: 100, align: 'right' })
-       .text(`₹${total.toFixed(2)}`, 450, y, { width: 100, align: 'right' });
-
-    // Footer
-    doc.font('Helvetica')
-       .fontSize(10)
-       .fillColor('#64748B')
-       .text('Thank you for shopping with Pillora!', 50, doc.page.height - 100)
-       .text('For support, contact us at: support@pillora.in', 50, doc.page.height - 80);
-
-    doc.end();
-
+    const doc = new PDFDocument();
     const writeStream = fs.createWriteStream(invoicePath);
 
     doc.pipe(writeStream);
+
+    // Add content to PDF
+    // Header
+    doc.rect(0, 0, doc.page.width, 70).fill('#2563eb');
+    doc
+      .fillColor('#fff')
+      .fontSize(28)
+      .font('Helvetica-Bold')
+      .text('Pillora', 40, 25, { align: 'left', continued: false });
+    doc.moveDown(2);
+
+    // White background for body
+    doc.rect(0, 70, doc.page.width, doc.page.height - 70).fill('#fff');
+    doc.fillColor('#0f172a');
+
+    // Order Info
+    doc.fontSize(16).font('Helvetica-Bold').text('Invoice', 40, 90);
+    doc.fontSize(11).font('Helvetica').moveDown(0.5);
+    doc.text(`Order Number: ${order.orderNumber}`, 40);
+    doc.text(`Order Date: ${new Date().toLocaleDateString()}`, 40);
+    doc.text(`Customer Name: ${order.customerName}`, 40);
+    doc.text(`Email: ${order.customerEmail}`, 40);
+    doc.text(`Shipping Address: ${order.shippingAddress}`, 40);
+    doc.moveDown(1);
+    
+    // Table Header
+    const tableTop = doc.y + 10;
+    doc.font('Helvetica-Bold').fontSize(12);
+    doc.text('Product', 40, tableTop);
+    doc.text('Qty', 250, tableTop, { width: 40, align: 'center' });
+    doc.text('Unit Price', 320, tableTop, { width: 80, align: 'right' });
+    doc.text('Total', 420, tableTop, { width: 80, align: 'right' });
+    doc.moveTo(40, tableTop + 16).lineTo(500, tableTop + 16).strokeColor('#e2e8f0').stroke();
+
+    // Table Rows
+    let y = tableTop + 22;
+    doc.font('Helvetica').fontSize(11);
+    order.items.forEach(item => {
+      doc.text(item.name, 40, y, { width: 200 });
+      doc.text(item.quantity.toString(), 250, y, { width: 40, align: 'center' });
+      doc.text(`₹${item.price.toFixed(2)}`, 320, y, { width: 80, align: 'right' });
+      doc.text(`₹${(item.price * item.quantity).toFixed(2)}`, 420, y, { width: 80, align: 'right' });
+      y += 20;
+    });
+
+    // Total
+    doc.moveTo(40, y + 4).lineTo(500, y + 4).strokeColor('#e2e8f0').stroke();
+    doc.font('Helvetica-Bold').fontSize(13);
+    doc.text('Total', 320, y + 10, { width: 80, align: 'right' });
+    doc.text(`₹${order.totalAmount.toFixed(2)}`, 420, y + 10, { width: 80, align: 'right' });
+
+    // Footer
+    doc.font('Helvetica').fontSize(10).fillColor('#64748b');
+    doc.text('Thank you for shopping with Pillora!', 40, y + 40, { align: 'left' });
+    doc.text('For support: support@pillora.in', 40, y + 55, { align: 'left' });
+
+    doc.end();
 
     writeStream.on('finish', async () => {
       try {
