@@ -35,20 +35,17 @@ router.get('/:orderNumber/invoice', auth, async (req, res) => {
       }
     });
 
-    // Register fonts
-    doc.registerFont('NotoSans', 'fonts/NotoSans-Regular.ttf');
-    doc.registerFont('NotoSans-Bold', 'fonts/NotoSans-Bold.ttf');
-
     // Header with theme colors
     doc.rect(0, 0, doc.page.width, 160).fill('#0D7C66');
     
     // Company name and logo
-    doc.font('NotoSans-Bold')
+    doc.font('Helvetica-Bold')
        .fontSize(35)
        .fillColor('#FFFFFF')
        .text('PILLORA', 50, 60);
     
-    doc.fontSize(14)
+    doc.font('Helvetica')
+       .fontSize(14)
        .fillColor('#E0F2F1')
        .text('Invoice', 50, 100);
 
@@ -58,28 +55,28 @@ router.get('/:orderNumber/invoice', auth, async (req, res) => {
        .stroke('#E2E8F0');
 
     // Order info in two columns
-    doc.font('NotoSans')
+    doc.font('Helvetica')
        .fontSize(10)
        .fillColor('#334155');
 
     // Left column
     doc.text('BILLED TO:', 70, 200)
-       .font('NotoSans-Bold')
+       .font('Helvetica-Bold')
        .text(order.customerName, 70, 220)
-       .font('NotoSans')
+       .font('Helvetica')
        .text(order.shippingAddress, 70, 240, { width: 200 });
 
     // Right column
     doc.text('Invoice Number:', 350, 200)
-       .font('NotoSans-Bold')
+       .font('Helvetica-Bold')
        .text(order.orderNumber, 350, 220)
-       .font('NotoSans')
+       .font('Helvetica')
        .text('Date:', 350, 240)
        .text(new Date(order.createdAt).toLocaleDateString('en-IN'), 350, 260);
 
     // Items table header
     const tableTop = 340;
-    doc.font('NotoSans-Bold')
+    doc.font('Helvetica-Bold')
        .fillColor('#0D7C66')
        .fontSize(12);
 
@@ -101,7 +98,7 @@ router.get('/:orderNumber/invoice', auth, async (req, res) => {
 
     // Table rows
     let y = tableTop + 40;
-    doc.font('NotoSans')
+    doc.font('Helvetica')
        .fontSize(11)
        .fillColor('#334155');
 
@@ -124,7 +121,7 @@ router.get('/:orderNumber/invoice', auth, async (req, res) => {
     y += 10;
 
     // Subtotal, GST, and Total
-    doc.font('NotoSans')
+    doc.font('Helvetica')
        .text('Subtotal:', 350, y, { width: 100, align: 'right' })
        .text(`₹${subtotal.toFixed(2)}`, 450, y, { width: 100, align: 'right' });
     
@@ -133,14 +130,14 @@ router.get('/:orderNumber/invoice', auth, async (req, res) => {
        .text(`₹${gst.toFixed(2)}`, 450, y, { width: 100, align: 'right' });
     
     y += 25;
-    doc.font('NotoSans-Bold')
+    doc.font('Helvetica-Bold')
        .fontSize(13)
        .fillColor('#0D7C66')
        .text('Total:', 350, y, { width: 100, align: 'right' })
        .text(`₹${total.toFixed(2)}`, 450, y, { width: 100, align: 'right' });
 
     // Footer
-    doc.font('NotoSans')
+    doc.font('Helvetica')
        .fontSize(10)
        .fillColor('#64748B')
        .text('Thank you for shopping with Pillora!', 50, doc.page.height - 100)
@@ -242,20 +239,17 @@ router.post('/', auth, async (req, res) => {
       }
     });
 
-    // Register fonts
-    doc.registerFont('NotoSans', 'fonts/NotoSans-Regular.ttf');
-    doc.registerFont('NotoSans-Bold', 'fonts/NotoSans-Bold.ttf');
-
     // Header with theme colors
     doc.rect(0, 0, doc.page.width, 160).fill('#0D7C66');
     
     // Company name and logo
-    doc.font('NotoSans-Bold')
+    doc.font('Helvetica-Bold')
        .fontSize(35)
        .fillColor('#FFFFFF')
        .text('PILLORA', 50, 60);
     
-    doc.fontSize(14)
+    doc.font('Helvetica')
+       .fontSize(14)
        .fillColor('#E0F2F1')
        .text('Invoice', 50, 100);
 
@@ -265,28 +259,28 @@ router.post('/', auth, async (req, res) => {
        .stroke('#E2E8F0');
 
     // Order info in two columns
-    doc.font('NotoSans')
+    doc.font('Helvetica')
        .fontSize(10)
        .fillColor('#334155');
 
     // Left column
     doc.text('BILLED TO:', 70, 200)
-       .font('NotoSans-Bold')
+       .font('Helvetica-Bold')
        .text(order.customerName, 70, 220)
-       .font('NotoSans')
+       .font('Helvetica')
        .text(order.shippingAddress, 70, 240, { width: 200 });
 
     // Right column
     doc.text('Invoice Number:', 350, 200)
-       .font('NotoSans-Bold')
+       .font('Helvetica-Bold')
        .text(order.orderNumber, 350, 220)
-       .font('NotoSans')
+       .font('Helvetica')
        .text('Date:', 350, 240)
        .text(new Date().toLocaleDateString('en-IN'), 350, 260);
 
     // Items table header
     const tableTop = 340;
-    doc.font('NotoSans-Bold')
+    doc.font('Helvetica-Bold')
        .fillColor('#0D7C66')
        .fontSize(12);
 
@@ -308,7 +302,7 @@ router.post('/', auth, async (req, res) => {
 
     // Table rows
     let y = tableTop + 40;
-    doc.font('NotoSans')
+    doc.font('Helvetica')
        .fontSize(11)
        .fillColor('#334155');
 
@@ -331,7 +325,7 @@ router.post('/', auth, async (req, res) => {
     y += 10;
 
     // Subtotal, GST, and Total
-    doc.font('NotoSans')
+    doc.font('Helvetica')
        .text('Subtotal:', 350, y, { width: 100, align: 'right' })
        .text(`₹${subtotal.toFixed(2)}`, 450, y, { width: 100, align: 'right' });
     
@@ -340,14 +334,14 @@ router.post('/', auth, async (req, res) => {
        .text(`₹${gst.toFixed(2)}`, 450, y, { width: 100, align: 'right' });
     
     y += 25;
-    doc.font('NotoSans-Bold')
+    doc.font('Helvetica-Bold')
        .fontSize(13)
        .fillColor('#0D7C66')
        .text('Total:', 350, y, { width: 100, align: 'right' })
        .text(`₹${total.toFixed(2)}`, 450, y, { width: 100, align: 'right' });
 
     // Footer
-    doc.font('NotoSans')
+    doc.font('Helvetica')
        .fontSize(10)
        .fillColor('#64748B')
        .text('Thank you for shopping with Pillora!', 50, doc.page.height - 100)
