@@ -118,9 +118,9 @@ function getInvoicePdfHtml(order) {
     <meta charset="utf-8" />
     <title>Pillora Invoice</title>
     <style>
-      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+      /* Remove @import and use system fonts instead */
       body {
-        font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         background: #f8fafc;
         margin: 0;
         padding: 0;
