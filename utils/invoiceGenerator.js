@@ -1,5 +1,5 @@
 const PDFDocument = require('pdfkit');
-const fs = require('fs'); // Add missing import
+const fs = require('fs');
 
 function generateInvoice(order, path) {
   return new Promise((resolve, reject) => {

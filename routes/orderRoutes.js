@@ -3,16 +3,14 @@ const router = express.Router();
 const Order = require('../models/Order');
 const auth = require('../middleware/auth');
 const PDFDocument = require('pdfkit');
-const fs = require('fs'); // For createWriteStream
-const fsPromises = require('fs').promises; // For async/await file ops
+const fs = require('fs');
+const fsPromises = require('fs').promises;
 const path = require('path');
 const { sendInvoiceEmail } = require('../utils/emailService');
-const Product = require('../models/Product'); // <-- Add this line
+const Product = require('../models/Product');
 
-// Add invoice download route
 router.get('/:orderNumber/invoice', auth, async (req, res) => {
   try {
-    // Find order by orderNumber instead of _id
     const order = await Order.findOne({ orderNumber: req.params.orderNumber });
     
     if (!order) {
@@ -20,7 +18,6 @@ router.get('/:orderNumber/invoice', auth, async (req, res) => {
       return res.status(404).json({ message: 'Order not found' });
     }
 
-    // Create temp directory if it doesn't exist
     const tempDir = path.join(__dirname, '../temp');
     if (!fs.existsSync(tempDir)) {
       fs.mkdirSync(tempDir, { recursive: true });
@@ -28,8 +25,6 @@ router.get('/:orderNumber/invoice', auth, async (req, res) => {
 
     const doc = new PDFDocument();
     const invoicePath = path.join(tempDir, `invoice-${order.orderNumber}.pdf`);
-
-    // Pipe the PDF to a file
     const stream = fs.createWriteStream(invoicePath);
     doc.pipe(stream);
 
@@ -90,7 +85,6 @@ router.get('/:orderNumber/invoice', auth, async (req, res) => {
 
     doc.end();
 
-    // When the stream is finished, send the file
     stream.on('finish', () => {
       res.download(invoicePath, `invoice-${order.orderNumber}.pdf`, (err) => {
         // Delete the file after sending
@@ -110,7 +104,6 @@ router.get('/:orderNumber/invoice', auth, async (req, res) => {
   }
 });
 
-// Get orders (filtered by vendor or customer)
 router.get('/', auth, async (req, res) => {
   try {
     let query = {};
@@ -120,7 +113,6 @@ router.get('/', auth, async (req, res) => {
       const vendorProducts = await Product.find({ vendorId: req.user.userId }, '_id');
       const vendorProductIds = vendorProducts.map(p => p._id);
 
-      // Only show orders containing at least one product from this vendor
       query['items.productId'] = { $in: vendorProductIds };
     } else if (req.user && req.user.type === 'customer') {
       query.customerEmail = req.user.email;
@@ -130,7 +122,6 @@ router.get('/', auth, async (req, res) => {
       .populate('customerId', 'name email')
       .sort({ createdAt: -1 });
 
-    // Attach customer info for frontend
     const ordersWithCustomerInfo = orders.map(order => {
       const customerInfo = order.customerId;
       return {
@@ -146,10 +137,8 @@ router.get('/', auth, async (req, res) => {
   }
 });
 
-// Update the order creation response
 router.post('/', auth, async (req, res) => {
   try {
-    // Set paymentStatus based on paymentMethod or PayPal result
     let paymentStatus = 'pending';
     if (req.body.paymentMethod === 'paypal' && (req.body.paymentStatus === 'completed' || req.body.paymentStatus === 'paid')) {
       paymentStatus = 'paid';
@@ -158,12 +147,9 @@ router.post('/', auth, async (req, res) => {
     } else if (req.body.paymentMethod === 'cod') {
       paymentStatus = 'pending';
     }
-    // Merge paymentStatus into order data
+
     const orderData = { ...req.body, paymentStatus };
-
     const order = await Order.create(orderData);
-
-    // Create temp directory if it doesn't exist
     const tempDir = path.join(__dirname, '../temp');
     if (!await fsPromises.access(tempDir).then(() => true).catch(() => false)) {
       await fsPromises.mkdir(tempDir, { recursive: true });
@@ -254,23 +240,18 @@ router.post('/', auth, async (req, res) => {
   }
 });
 
-// Update order status (vendor can only update their own orders)
 router.patch('/:orderId/status', auth, async (req, res) => {
   try {
     const { orderId } = req.params;
     const { status } = req.body;
-
-    // Find the order and check if the vendor owns at least one product in the order
     const order = await Order.findById(orderId).populate('items.productId');
     if (!order) {
       return res.status(404).json({ message: 'Order not found' });
     }
 
     if (req.user && req.user.type === 'vendor') {
-      // Get all product IDs for this vendor
       const vendorProducts = await Product.find({ vendorId: req.user.userId }, '_id');
-      const vendorProductIds = vendorProducts.map(p => p._id.toString());
-      // Check if any product in the order belongs to this vendor
+      const vendorProductIds = vendorProducts.map(p => p._id.toString());r
       const orderProductIds = order.items.map(item => item.productId?._id?.toString());
       const hasVendorProduct = orderProductIds.some(pid => vendorProductIds.includes(pid));
       if (!hasVendorProduct) {
@@ -281,7 +262,6 @@ router.patch('/:orderId/status', auth, async (req, res) => {
     order.status = status;
     await order.save();
 
-    // Populate customer info for response
     await order.populate('customerId', 'name email');
     const customerInfo = order.customerId;
     const orderWithCustomerInfo = {
@@ -296,7 +276,6 @@ router.patch('/:orderId/status', auth, async (req, res) => {
   }
 });
 
-// PATCH endpoint to update payment status (optional, for extensibility)
 router.patch('/:orderId/payment-status', auth, async (req, res) => {
   try {
     const { orderId } = req.params;
@@ -306,8 +285,6 @@ router.patch('/:orderId/payment-status', auth, async (req, res) => {
     if (!order) {
       return res.status(404).json({ message: 'Order not found' });
     }
-
-    // Optionally, add vendor/customer/admin checks here
 
     order.paymentStatus = paymentStatus;
     await order.save();

@@ -6,8 +6,6 @@ const Customer = require('../models/Customer');
 router.post('/', auth, async (req, res) => {
   try {
     const { items, totalAmount, shippingAddress, paymentMethod } = req.body;
-    
-    // Get full user details from auth middleware
     const customer = await Customer.findById(req.user._id);
     if (!customer) {
       return res.status(404).json({ message: 'Customer not found' });

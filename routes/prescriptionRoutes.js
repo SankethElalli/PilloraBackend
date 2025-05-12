@@ -6,7 +6,6 @@ const Prescription = require('../models/Prescription');
 const mongoose = require('mongoose');
 const auth = require('../middleware/auth');
 
-// Add review to prescription
 router.post('/:id/review', async (req, res) => {
   try {
     const { id } = req.params;
@@ -58,7 +57,6 @@ const upload = multer({
   }
 });
 
-// Get prescriptions (customer or vendor)
 router.get('/', auth, async (req, res) => {
   try {
     let query = {};
@@ -74,7 +72,6 @@ router.get('/', auth, async (req, res) => {
   }
 });
 
-// Upload prescription (customer only)
 router.post('/upload', auth, multer({
   storage: multer.diskStorage({
     destination: function (req, file, cb) {

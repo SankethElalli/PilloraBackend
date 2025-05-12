@@ -9,16 +9,13 @@ router.post('/register', async (req, res) => {
   try {
     const { email, password, name, phone, address } = req.body;
 
-    // Check if customer already exists
     const existingCustomer = await Customer.findOne({ email: email.toLowerCase() });
     if (existingCustomer) {
       return res.status(400).json({ message: 'Email already registered' });
     }
 
-    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create new customer
     const customer = new Customer({
       name,
       email: email.toLowerCase(),
@@ -51,7 +48,6 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
 
-    // Generate JWT token
     const token = jwt.sign(
       { userId: customer._id, type: 'customer', email: customer.email, name: customer.name },
       process.env.JWT_SECRET || 'your-secret-key',
@@ -66,7 +62,6 @@ router.post('/login', async (req, res) => {
       address: customer.address
     };
 
-    // Send response with token and user data
     res.json({
       token,
       user: userResponse

@@ -87,7 +87,6 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// Get all orders for a vendor
 router.get('/orders', auth, async (req, res) => {
   try {
     const orders = await Order.find({ vendorId: req.user.userId })
@@ -99,7 +98,6 @@ router.get('/orders', auth, async (req, res) => {
   }
 });
 
-// Update order status
 router.patch('/orders/:orderId/status', auth, async (req, res) => {
   try {
     const { status } = req.body;
@@ -119,7 +117,6 @@ router.patch('/orders/:orderId/status', auth, async (req, res) => {
   }
 });
 
-// Get order details
 router.get('/orders/:orderId', auth, async (req, res) => {
   try {
     const order = await Order.findOne({

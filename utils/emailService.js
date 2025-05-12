@@ -101,7 +101,6 @@ async function sendInvoiceEmail(to, order, invoicePath) {
   }
 }
 
-// Example: Use this HTML for PDF generation (replace your current template)
 function getInvoicePdfHtml(order) {
   const itemsHtml = order.items.map(item => `
     <tr>
@@ -341,7 +340,6 @@ function getInvoicePdfHtml(order) {
   `;
 }
 
-// Verify email configuration on startup
 transporter.verify(function (error, success) {
   if (error) {
     console.error('Email configuration error:', error);

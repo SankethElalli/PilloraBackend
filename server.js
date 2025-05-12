@@ -21,17 +21,11 @@ connectDB();
 
 // Hosts
 const allowedOrigins = [
-  'http://localhost:3000',
-  'https://pillora.vercel.app',
+  'https://pillora.vercel.app'
 ];
+
 if (process.env.HOST_IP) {
   allowedOrigins.push(`http://${process.env.HOST_IP}:3000`);
-}
-// Allow all 192.168.*.*:3000 for dev mobile access
-for (let i = 0; i < 256; i++) {
-  for (let j = 0; j < 256; j++) {
-    allowedOrigins.push(`http://192.168.${i}.${j}:3000`);
-  }
 }
 
 app.use(cors({

@@ -11,9 +11,7 @@ const verifyToken = (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = decoded;
 
-    // Ensure type is set (for legacy tokens or missing type)
     if (!req.user.type) {
-      // Infer type from URL path as fallback (not secure, but better than nothing)
       if (req.originalUrl.includes('/vendors')) {
         req.user.type = 'vendor';
       } else if (req.originalUrl.includes('/customers')) {
