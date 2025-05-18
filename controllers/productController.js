@@ -37,30 +37,8 @@ exports.getProducts = async (req, res) => {
     if (req.user && req.user.type === 'vendor') {
       query.vendorId = req.user.userId;
     }
-    // Pagination
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 20;
-    const skip = (page - 1) * limit;
-
-    // Only select necessary fields
-    const selectFields = 'name price image category stock vendorId';
-
-    // Optimize population: only get businessName
-    const products = await Product.find(query)
-      .select(selectFields)
-      .populate('vendorId', 'businessName')
-      .skip(skip)
-      .limit(limit);
-
-    // Optionally, return total count for frontend pagination
-    const total = await Product.countDocuments(query);
-
-    res.json({
-      products,
-      total,
-      page,
-      pages: Math.ceil(total / limit)
-    });
+    const products = await Product.find(query).populate('vendorId', 'businessName');
+    res.json(products);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
