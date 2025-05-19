@@ -28,7 +28,14 @@ const vendorSchema = new mongoose.Schema({
   isApproved: {
     type: Boolean,
     default: false
-  }
+  },
+  ads: [
+    {
+      imageUrl: String,
+      link: String,
+      _id: { type: mongoose.Schema.Types.ObjectId, auto: true }
+    }
+  ]
 }, {
   timestamps: true
 });
