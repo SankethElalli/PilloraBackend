@@ -55,10 +55,6 @@ const productSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  adImageUrl: {
-    type: String,
-    required: false
-  },
   reviews: {
     type: Array,
     default: []

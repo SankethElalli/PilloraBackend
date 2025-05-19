@@ -5,8 +5,6 @@ const Order = require('../models/Order');
 const bcrypt = require('bcryptjs');
 const auth = require('../middleware/auth');
 const jwt = require('jsonwebtoken');
-const multer = require('multer');
-const path = require('path');
 
 router.post('/register', async (req, res) => {
   try {
@@ -133,91 +131,6 @@ router.get('/orders/:orderId', auth, async (req, res) => {
     res.json(order);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching order details' });
-  }
-});
-
-// --- Vendor Ads Management ---
-
-// Get all ads for the logged-in vendor
-router.get('/ads', auth, async (req, res) => {
-  try {
-    const vendor = await Vendor.findById(req.user.userId);
-    if (!vendor) return res.status(404).json({ message: 'Vendor not found' });
-    // Ensure imageUrl is absolute if needed
-    const ads = (vendor.ads || []).map(ad => {
-      let imageUrl = ad.imageUrl;
-      if (imageUrl && imageUrl.startsWith('/uploads/')) {
-        imageUrl = process.env.SERVER_URL
-          ? `${process.env.SERVER_URL}${imageUrl}`
-          : imageUrl;
-      }
-      return { ...ad.toObject(), imageUrl };
-    });
-    res.json(ads);
-  } catch (err) {
-    res.status(500).json({ message: 'Error fetching ads' });
-  }
-});
-
-// Upload ad image
-const adStorage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'uploads/vendor-ads/');
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + '-' + file.originalname.replace(/\s+/g, ''));
-  }
-});
-const adUpload = multer({ storage: adStorage });
-
-router.post('/ads/upload', auth, adUpload.single('image'), (req, res) => {
-  if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
-  const url = `/uploads/vendor-ads/${req.file.filename}`;
-  res.json({ url });
-});
-
-// Public: Get all vendor ads for homepage carousel
-router.get('/ads/public', async (req, res) => {
-  try {
-    const Vendor = require('../models/Vendor');
-    // Aggregate all ads from all vendors
-    const vendors = await Vendor.find({}, 'ads');
-    const allAds = [];
-    vendors.forEach(vendor => {
-      if (Array.isArray(vendor.ads)) {
-        vendor.ads.forEach(ad => {
-          let imageUrl = ad.imageUrl;
-          if (imageUrl && imageUrl.startsWith('/uploads/')) {
-            imageUrl = process.env.SERVER_URL
-              ? `${process.env.SERVER_URL}${imageUrl}`
-              : imageUrl;
-          }
-          allAds.push({
-            imageUrl,
-            link: ad.link || '',
-            _id: ad._id
-          });
-        });
-      }
-    });
-    res.json(allAds);
-  } catch (err) {
-    res.status(500).json({ message: 'Error fetching public ads' });
-  }
-});
-
-// Add a new ad (imageUrl/link)
-router.post('/ads', auth, async (req, res) => {
-  try {
-    const { imageUrl, link } = req.body;
-    if (!imageUrl) return res.status(400).json({ message: 'Image URL required' });
-    const vendor = await Vendor.findById(req.user.userId);
-    if (!vendor) return res.status(404).json({ message: 'Vendor not found' });
-    vendor.ads.push({ imageUrl, link });
-    await vendor.save();
-    res.status(201).json({ message: 'Ad added' });
-  } catch (err) {
-    res.status(500).json({ message: 'Error adding ad' });
   }
 });
 
