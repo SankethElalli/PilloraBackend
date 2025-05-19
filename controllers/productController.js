@@ -2,7 +2,7 @@ const Product = require('../models/Product');
 
 exports.addProduct = async (req, res) => {
   try {
-    const { name, description, price, stock, category, image } = req.body;
+    const { name, description, price, stock, category, image, adImageUrl } = req.body;
     
     if (!name || !description || !price || !category || !stock || !image) {
       return res.status(400).json({ 
@@ -17,6 +17,7 @@ exports.addProduct = async (req, res) => {
       stock: Number(stock),
       category,
       image,
+      adImageUrl, // Save adImageUrl if provided
       vendorId: req.user.userId
     });
 
@@ -63,7 +64,7 @@ exports.updateProduct = async (req, res) => {
     if (!product) {
       return res.status(404).json({ message: 'Product not found' });
     }
-    const allowedFields = ['name', 'description', 'price', 'stock', 'category', 'image'];
+    const allowedFields = ['name', 'description', 'price', 'stock', 'category', 'image', 'adImageUrl'];
     allowedFields.forEach(field => {
       if (req.body[field] !== undefined) {
         product[field] = req.body[field];
