@@ -194,4 +194,36 @@ router.delete('/ads/:adId', auth, async (req, res) => {
   }
 });
 
+// Public: Get all vendor ads for homepage carousel
+router.get('/ads/public', async (req, res) => {
+  try {
+    const Vendor = require('../models/Vendor');
+    // Aggregate all ads from all vendors
+    const vendors = await Vendor.find({}, 'ads');
+    const allAds = [];
+    vendors.forEach(vendor => {
+      if (Array.isArray(vendor.ads)) {
+        vendor.ads.forEach(ad => {
+          // Ensure imageUrl is absolute if needed
+          let imageUrl = ad.imageUrl;
+          if (imageUrl && imageUrl.startsWith('/uploads/')) {
+            // Prepend server URL if running in production, else use relative
+            imageUrl = process.env.SERVER_URL
+              ? `${process.env.SERVER_URL}${imageUrl}`
+              : imageUrl;
+          }
+          allAds.push({
+            imageUrl,
+            link: ad.link || '',
+            _id: ad._id
+          });
+        });
+      }
+    });
+    res.json(allAds);
+  } catch (err) {
+    res.status(500).json({ message: 'Error fetching public ads' });
+  }
+});
+
 module.exports = router;
