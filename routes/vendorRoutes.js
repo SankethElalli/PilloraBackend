@@ -143,7 +143,17 @@ router.get('/ads', auth, async (req, res) => {
   try {
     const vendor = await Vendor.findById(req.user.userId);
     if (!vendor) return res.status(404).json({ message: 'Vendor not found' });
-    res.json(vendor.ads || []);
+    // Ensure imageUrl is absolute if needed
+    const ads = (vendor.ads || []).map(ad => {
+      let imageUrl = ad.imageUrl;
+      if (imageUrl && imageUrl.startsWith('/uploads/')) {
+        imageUrl = process.env.SERVER_URL
+          ? `${process.env.SERVER_URL}${imageUrl}`
+          : imageUrl;
+      }
+      return { ...ad.toObject(), imageUrl };
+    });
+    res.json(ads);
   } catch (err) {
     res.status(500).json({ message: 'Error fetching ads' });
   }
@@ -204,10 +214,8 @@ router.get('/ads/public', async (req, res) => {
     vendors.forEach(vendor => {
       if (Array.isArray(vendor.ads)) {
         vendor.ads.forEach(ad => {
-          // Ensure imageUrl is absolute if needed
           let imageUrl = ad.imageUrl;
           if (imageUrl && imageUrl.startsWith('/uploads/')) {
-            // Prepend server URL if running in production, else use relative
             imageUrl = process.env.SERVER_URL
               ? `${process.env.SERVER_URL}${imageUrl}`
               : imageUrl;
