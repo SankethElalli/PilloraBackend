@@ -206,4 +206,19 @@ router.get('/ads/public', async (req, res) => {
   }
 });
 
+// Add a new ad (imageUrl/link)
+router.post('/ads', auth, async (req, res) => {
+  try {
+    const { imageUrl, link } = req.body;
+    if (!imageUrl) return res.status(400).json({ message: 'Image URL required' });
+    const vendor = await Vendor.findById(req.user.userId);
+    if (!vendor) return res.status(404).json({ message: 'Vendor not found' });
+    vendor.ads.push({ imageUrl, link });
+    await vendor.save();
+    res.status(201).json({ message: 'Ad added' });
+  } catch (err) {
+    res.status(500).json({ message: 'Error adding ad' });
+  }
+});
+
 module.exports = router;
