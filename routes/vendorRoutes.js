@@ -159,21 +159,6 @@ router.get('/ads', auth, async (req, res) => {
   }
 });
 
-// Add a new ad (imageUrl/link)
-router.post('/ads', auth, async (req, res) => {
-  try {
-    const { imageUrl, link } = req.body;
-    if (!imageUrl) return res.status(400).json({ message: 'Image URL required' });
-    const vendor = await Vendor.findById(req.user.userId);
-    if (!vendor) return res.status(404).json({ message: 'Vendor not found' });
-    vendor.ads.push({ imageUrl, link });
-    await vendor.save();
-    res.status(201).json({ message: 'Ad added' });
-  } catch (err) {
-    res.status(500).json({ message: 'Error adding ad' });
-  }
-});
-
 // Upload ad image
 const adStorage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -189,19 +174,6 @@ router.post('/ads/upload', auth, adUpload.single('image'), (req, res) => {
   if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
   const url = `/uploads/vendor-ads/${req.file.filename}`;
   res.json({ url });
-});
-
-// Delete ad
-router.delete('/ads/:adId', auth, async (req, res) => {
-  try {
-    const vendor = await Vendor.findById(req.user.userId);
-    if (!vendor) return res.status(404).json({ message: 'Vendor not found' });
-    vendor.ads = vendor.ads.filter(ad => ad._id.toString() !== req.params.adId);
-    await vendor.save();
-    res.json({ message: 'Ad removed' });
-  } catch (err) {
-    res.status(500).json({ message: 'Error removing ad' });
-  }
 });
 
 // Public: Get all vendor ads for homepage carousel
