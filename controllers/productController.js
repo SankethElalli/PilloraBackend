@@ -39,6 +39,13 @@ exports.getProducts = async (req, res) => {
     if (req.user && req.user.type === 'vendor') {
       query.vendorId = req.user.userId;
     }
+    
+    // Add banner filter if showInBanner query parameter is present
+    if (req.query.showInBanner) {
+      query.showInBanner = true;
+      query.adBanner = { $exists: true, $ne: '' }; // Check if adBanner exists and is not empty
+    }
+    
     const products = await Product.find(query).populate('vendorId', 'businessName');
     res.json(products);
   } catch (error) {
