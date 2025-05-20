@@ -55,6 +55,14 @@ const productSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  adBanner: {
+    type: String,
+    required: false
+  },
+  showInBanner: {
+    type: Boolean,
+    default: false
+  },
   reviews: {
     type: Array,
     default: []
